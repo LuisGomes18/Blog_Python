@@ -2,3 +2,8 @@ informacao_server:
   host: '0.0.0.0'
   port: 3000
   debug: true
+
+informacao_api:
+  host: '0.0.0.0'
+  port: 3005
+  debug: true
