@@ -1,4 +1,5 @@
 from os import urandom
+import time
 from flask import Flask, jsonify, request, abort
 from extras import carregar_configuracoes, conectar_banco_de_dados
 
@@ -6,11 +7,21 @@ from extras import carregar_configuracoes, conectar_banco_de_dados
 app = Flask(__name__)
 app.secret_key = urandom(16)
 confg = carregar_configuracoes()
+start_time = time.time()
 
+def get_uptime():
+    current_time = time.time()
+    uptime_seconds = int(current_time - start_time)
+    return uptime_seconds
 
 @app.route('/api/status', methods=['GET'])
 def index():
     return jsonify({'message': 'API Rodando normalmente'}), 200
+
+@app.route('/api/uptime', methods=['GET'])
+def get_uptime_api():
+    uptime_seconds = get_uptime()
+    return f'A API está rodando há {uptime_seconds} segundos.'
 
 @app.route('/api/posts', methods=['GET'])
 def get_posts():
