@@ -1,7 +1,7 @@
+from os import getenv, urandom
 import requests
-from os import urandom, getenv
 from dotenv import load_dotenv
-from flask import Flask, render_template, abort
+from flask import Flask, abort, render_template
 from extras import carregar_configuracoes
 
 

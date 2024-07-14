@@ -56,7 +56,6 @@ def carregar_configuracoes():
     except Exception as e:
         raise Exception(f'Erro ao ler o arquivo config.yml: {e}')
 
-
 def conectar_banco_de_dados():
     conececao = mysql.connector.connect(**db_config)
     return conececao

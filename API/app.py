@@ -2,6 +2,7 @@ from os import urandom
 from flask import Flask, jsonify
 from extras import carregar_configuracoes, conectar_banco_de_dados
 
+
 app = Flask(__name__)
 app.secret_key = urandom(16)
 confg = carregar_configuracoes()
