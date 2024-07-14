@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=7">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="theme-color" content="#ffffff" />
     <link rel="stylesheet" href="../static/css/index/nav_bar.css">
     <link rel="stylesheet" href="../static/css/index/main.css">
     <link rel="stylesheet" href="../static/css/index/footer.css">
@@ -13,7 +14,42 @@
 </head>
 
 <body>
+    <nav class="navbar" id="navbar">
+        <a href="#home" class="active">Home</a>
+        <a href="#news">News</a>
+        <a href="#contact">Contact</a>
+        <a href="#about">About</a>
+        <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+            <p>Menu</p>
+        </a>
+    </nav>
 
+    <main>
+        <h1 class="titulo_pagina">Blog</h1>
+
+        <div class="root">
+            {% for post in posts %}
+            <div class="posts">
+                <h2>{{ post["titulo"] }}</h2>
+                <p>{{ post["descricao"] }}</p>
+                <p>Data de Postagem:<br> {{ post["data"] }}</p>
+                <p>ID do post: {{ post["id"] }}</p>
+                {% if post["modificado"] == 1 %}
+                <p>Modificado: Sim</p>
+                <p>Data de Modificação:<br> {{ post["data_modificacao"] }}</p>
+                {% else %}
+                <p>Modificado: Não</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </main>
+
+    <footer>
+        <p>Copyright © 2024. All rights reserved.</p>
+    </footer>
+
+    <script src="../static/js/index/navbar.js"></script>
 </body>
 
 </html>
