@@ -8,7 +8,7 @@ app.secret_key = urandom(16)
 confg = carregar_configuracoes()
 
 
-@app.route('/api')
+@app.route('/api/status', methods=['GET'])
 def index():
     return jsonify({'message': 'API Rodando normalmente'}), 200
 
