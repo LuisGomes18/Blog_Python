@@ -1,5 +1,5 @@
 from os import urandom
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request, abort
 from extras import carregar_configuracoes, conectar_banco_de_dados
 
 
@@ -21,6 +21,20 @@ def get_posts():
     cursor.close()
     coneccao.close()
     return jsonify(posts), 200
+
+@app.route('/api/post', methods=['GET'])
+def get_post():
+    id = request.args.get('id')
+    conexao = conectar_banco_de_dados()
+    cursor = conexao.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM posts WHERE id = %s", (id,))
+    post = cursor.fetchone()
+    cursor.close()
+    conexao.close()
+    if post:
+        return jsonify(post), 200
+    else:
+        abort(404)
 
 
 @app.errorhandler(404)
