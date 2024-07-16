@@ -68,6 +68,7 @@ def login():
     else:
         return jsonify({'message': 'Credenciais inválidas'}), 401
 
+
 @app.errorhandler(404)
 def not_found(error):
     return jsonify({'message': 'Requisição inválida'}), 404
