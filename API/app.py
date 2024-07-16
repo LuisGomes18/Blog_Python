@@ -20,15 +20,10 @@ def get_uptime():
 @app.route('/api/status', methods=['GET'])
 def index():
     uptime_seconds = get_uptime()
-    status_message = {'message': 'API Rodando normalmente', 'uptime_seconds': uptime_seconds}
+    status_message = {'message': 'API Rodando normalmente', 'uptime': f'A API está rodando há {uptime_seconds} segundos.'}
     if internal_errors:
         status_message['internal_errors'] = internal_errors
     return jsonify(status_message), 200
-
-@app.route('/api/uptime', methods=['GET'])
-def get_uptime_api():
-    uptime_seconds = get_uptime()
-    return f'A API está rodando há {uptime_seconds} segundos.'
 
 @app.route('/api/posts', methods=['GET'])
 def get_posts():
@@ -54,6 +49,24 @@ def get_post():
     else:
         abort(404)
 
+@app.route('/api/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    username = data.get('username')
+    password = data.get('password')
+
+    connection = conectar_banco_de_dados()
+    cursor = connection.cursor(dictionary=True)
+    query = "SELECT * FROM login WHERE username = %s AND password = %s"
+    cursor.execute(query, (username, password))
+
+    user = cursor.fetchone()
+    cursor.close()
+    connection.close()
+    if user:
+        return jsonify({'message': 'Login bem-sucedido'}), 200
+    else:
+        return jsonify({'message': 'Credenciais inválidas'}), 401
 
 @app.errorhandler(404)
 def not_found(error):

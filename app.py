@@ -1,9 +1,8 @@
 from os import getenv, urandom
 import requests
 from dotenv import load_dotenv
-from flask import Flask, abort, render_template
+from flask import Flask, abort, render_template, session, redirect, url_for, request
 from extras import carregar_configuracoes
-
 
 app = Flask(__name__)
 app.secret_key = urandom(16)
@@ -14,16 +13,52 @@ ip_api = getenv('IP_API')
 
 @app.route('/')
 def index():
-    response = requests.get(f"http://{ip_api}/api/posts")
+    response = requests.get(f"http://{ip_api}/api/posts", timeout=5)
     if response.status_code == 200:
         posts = response.json()
         return render_template('index.html', posts=posts), 200
     else:
         abort(500)
 
-@app.route('/login')
+
+@app.route('/login', methods=['GET', 'POST'])
 def login():
+    if 'username' in session:
+        return redirect(url_for('index')), 302
+
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        if not username or not password:
+            return render_template('login.html', error='Credenciais não podem estar em branco!'), 401
+
+        dados = {'username': username, 'password': password}
+
+        try:
+            response = requests.post(f"http://{ip_api}/api/login", json=dados, timeout=5)
+            if response.status_code == 200:
+                session['username'] = username
+                return redirect(url_for('index')), 302
+            else:
+                return render_template('login.html', error='Credenciais inválidas!'), 401
+
+        except requests.Timeout:
+            abort(500)
+        except requests.exceptions.ConnectionError:
+            abort(500)
+        except requests.exceptions.RequestException:
+            abort(500)
+
     return render_template('login.html'), 200
+
+@app.route('/logout')
+def logout():
+    if 'username' in session:
+        session.pop('username')
+        return redirect(url_for('login')), 302
+    else:
+        return redirect(url_for('index')), 302
 
 
 if __name__ == '__main__':
