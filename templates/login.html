@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=7">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="stylesheet" href="../static/css/login/main.css">
+    <title>Blog Login</title>
+</head>
+
+<body>
+    <div class="login-container">
+        <h2>Login</h2>
+        <form action="/login" method="POST">
+            <label for="username">Usuário</label>
+            <input type="text" id="username" name="username" required autocomplete="username">
+            
+            <label for="password">Senha</label>
+            <input type="password" id="password" name="password" required autocomplete="current-password">
+            
+            <button type="submit">Entrar</button>
+
+            {% if error %}
+            <p class="error" style="color: red">{{ error }}</p>
+            {% endif %}
+        </form>
+    </div>
+</body>
+
+</html>
