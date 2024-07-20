@@ -9,6 +9,30 @@ body {
     box-sizing: border-box;
 }
 
+.singup_button {
+    padding: 10px;
+    border: 2px solid black;
+    border-radius: 15px;
+    text-decoration: none;
+    color: black;
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 10px;
+}
+
+.voltar_button {
+    padding: 10px;
+    border: 2px solid black;
+    border-radius: 15px;
+    text-decoration: none;
+    color: black;
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 10px;
+}
+
 .login-container {
     width: 90%;
     max-width: 400px;
