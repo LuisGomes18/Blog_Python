@@ -7,6 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=7">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="theme-color" content="#ffffff" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     <link rel="stylesheet" href="../static/css/index/nav_bar.css">
     <link rel="stylesheet" href="../static/css/index/main.css">
     <link rel="stylesheet" href="../static/css/index/footer.css">
@@ -20,12 +21,14 @@
         <a href="#contact">Contact</a>
         <a href="#about">About</a>
         <a href="javascript:void(0);" class="icon" onclick="myFunction()">
-            <p>Menu</p>
+            <span class="material-symbols-outlined">
+                menu
+            </span>
         </a>
     </nav>
 
     <main>
-        <h1 class="titulo_pagina">Blog</h1>
+        <h1 class="titulo_pagina">Sistema de Blog</h1>
 
         <div class="root">
             {% for post in posts %}
@@ -34,6 +37,7 @@
                 <p>{{ post["descricao"] }}</p>
                 <p>Data de Postagem:<br> {{ post["data"] }}</p>
                 <p>ID do post: {{ post["id"] }}</p>
+                <p>Autor do Post: {{ post["autor_post"] }}
                 {% if post["modificado"] == 1 %}
                 <p>Modificado: Sim</p>
                 <p>Data de Modificação:<br> {{ post["data_modificacao"] }}</p>

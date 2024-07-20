@@ -17,6 +17,14 @@ nav .icon {
     display: none;
 }
 
+a.icon {
+    padding: 10px !important;
+}
+
+.material-symbols-outlined {
+    font-size: 35px;
+}
+
 @media screen and (max-width: 600px) {
     nav a {
         display: none;
