@@ -52,6 +52,10 @@ def login():
 
     return render_template('login.html'), 200
 
+@app.route('/singup', methods=['GET', 'POST'])
+def singup():
+    return render_template('singup.html'), 200
+
 @app.route('/logout')
 def logout():
     if 'username' in session:

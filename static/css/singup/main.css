@@ -1,0 +1,84 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.login_button {
+    padding: 10px;
+    border: 2px solid black;
+    border-radius: 15px;
+    text-decoration: none;
+    color: black;
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 10px;
+}
+
+.voltar_button {
+    padding: 10px;
+    border: 2px solid black;
+    border-radius: 15px;
+    text-decoration: none;
+    color: black;
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 10px;
+}
+
+.singup-container {
+    width: 90%;
+    max-width: 400px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+}
+
+.singup-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.singup-container label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.singup-container input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    box-sizing: border-box;
+}
+
+.singup-container button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    background: #333;
+    color: #fff;
+    font-size: 16px;
+}
+
+.singup-container button:hover {
+    background: #555;
+}
+
+@media (min-width: 768px) {
+    .singup-container {
+        width: 50%;
+    }
+}
