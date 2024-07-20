@@ -1,8 +1,11 @@
 from os import urandom
+from random import randint
 import time
 from datetime import datetime
+import mysql.connector
 from flask import Flask, jsonify, request, abort
-from extras import carregar_configuracoes, conectar_banco_de_dados
+from werkzeug.security import generate_password_hash, check_password_hash
+from extras import carregar_configuracoes, conectar_banco_de_dados, gerar_id_post
 
 
 app = Flask(__name__)
@@ -25,6 +28,8 @@ def index():
         status_message['internal_errors'] = internal_errors
     return jsonify(status_message), 200
 
+
+
 @app.route('/api/posts', methods=['GET'])
 def get_posts():
     connection = conectar_banco_de_dados()
@@ -34,6 +39,7 @@ def get_posts():
     cursor.close()
     connection.close()
     return jsonify(posts), 200
+
 
 @app.route('/api/post', methods=['GET'])
 def get_post():
@@ -49,6 +55,45 @@ def get_post():
     else:
         abort(404)
 
+
+@app.route('/api/signup', methods=['POST'])
+def signup():
+    data = request.get_json()
+
+    username = data.get('username')
+    primeiro_nome = data.get('primeiro_nome')
+    ultimo_nome = data.get('ultimo_nome')
+    genero = data.get('genero')
+    data_nascimento = data.get('data_nascimento')
+    email = data.get('email')
+    password = data.get('password')
+    confirm_password = data.get('confirm_password')
+
+    if password != confirm_password:
+        return jsonify({'message': 'As senhas não coincidem'}), 400
+
+    hashed_password = generate_password_hash(password)
+    user_id = gerar_id_post()
+
+    try:
+        connection = conectar_banco_de_dados()
+        cursor = connection.cursor(dictionary=True)
+        query = """
+            INSERT INTO login (id, username, primeiro_nome, ultimo_nome, genero, data_nascimento, email, password, nivel_acesso)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """
+        cursor.execute(query, (user_id, username, primeiro_nome, ultimo_nome, genero, data_nascimento, email, hashed_password, 0))
+        connection.commit()
+        return jsonify({'message': 'Registro bem-sucedido'}), 201
+
+    except mysql.connector.Error as err:
+        return jsonify({'message': f'Erro ao registrar: {err}'}), 500
+
+    finally:
+        cursor.close()
+        connection.close()
+
+
 @app.route('/api/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -57,13 +102,13 @@ def login():
 
     connection = conectar_banco_de_dados()
     cursor = connection.cursor(dictionary=True)
-    query = "SELECT * FROM login WHERE username = %s AND password = %s"
-    cursor.execute(query, (username, password))
-
+    query = "SELECT * FROM login WHERE username = %s"
+    cursor.execute(query, (username,))
     user = cursor.fetchone()
     cursor.close()
     connection.close()
-    if user:
+
+    if user and check_password_hash(user['password'], password):
         return jsonify({'message': 'Login bem-sucedido'}), 200
     else:
         return jsonify({'message': 'Credenciais inválidas'}), 401
@@ -79,6 +124,7 @@ def handle_exception(error):
     error_message = f'Erro em {now}: {str(error)}'
     internal_errors.append(error_message)
     return jsonify({'message': 'Erro interno'}), 500
+
 
 
 if __name__ == '__main__':
