@@ -16,7 +16,11 @@ def index():
     response = requests.get(f"http://{ip_api}/api/posts", timeout=5)
     if response.status_code == 200:
         posts = response.json()
-        return render_template('index.html', posts=posts), 200
+        if 'username' in session:
+            username = session.get('username')
+            return render_template('index.html', posts=posts, username=username), 200
+        else:
+            return render_template('index.html', posts=posts), 200
     else:
         abort(500)
 
@@ -85,10 +89,12 @@ def singup():
         }
 
         try:
-            response = requests.post(f"http://{ip_api}/api/singup", json=dados, timeout=5)
-            if response.status_code == 200:
+            response = requests.post(f"http://{ip_api}/api/signup", json=dados, timeout=5)
+            if response.status_code == 201:
                 session['username'] = username
-                return redirect(url_for('index')), 302
+                return redirect(url_for('login')), 302
+            elif response.status_code == 500:
+                return render_template('singup.html', error=response.json()), 500
             else:
                 return render_template('singup.html', error='Credenciais inválidas!'), 401
 
