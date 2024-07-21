@@ -69,9 +69,6 @@ def signup():
     password = data.get('password')
     confirm_password = data.get('confirm_password')
 
-    if password != confirm_password:
-        return jsonify({'message': 'As senhas não coincidem'}), 400
-
     hashed_password = generate_password_hash(password)
     user_id = gerar_id_post()
 
