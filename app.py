@@ -54,6 +54,51 @@ def login():
 
 @app.route('/singup', methods=['GET', 'POST'])
 def singup():
+    if 'username' in session:
+        return redirect(url_for('index')), 302
+
+    if request.method == 'POST':
+        username = request.form['username']
+        primeiro_nome = request.form['primeiro_nome']
+        ultimo_nome = request.form['ultimo_nome']
+        genero = request.form['genero']
+        data_nascimento = request.form['data_nascimento']
+        email = request.form['email']
+        password = request.form['password']
+        confirm_password = request.form['confirm_password']
+
+        if password != confirm_password:
+            return render_template('singup.html', error='As senhas não coincidem'), 401
+
+        if not username or not primeiro_nome or not ultimo_nome or not genero or not data_nascimento or not email or not password or not confirm_password:
+            return render_template('singup.html', error='Credenciais não podem estar em branco!'), 401
+
+        dados = {
+            'username': username,
+            'primeiro_nome': primeiro_nome,
+            'ultimo_nome': ultimo_nome,
+            'genero': genero,
+            'data_nascimento': data_nascimento,
+            'email': email,
+            'confirm_password': confirm_password,
+            'password': password
+        }
+
+        try:
+            response = requests.post(f"http://{ip_api}/api/singup", json=dados, timeout=5)
+            if response.status_code == 200:
+                session['username'] = username
+                return redirect(url_for('index')), 302
+            else:
+                return render_template('singup.html', error='Credenciais inválidas!'), 401
+
+        except requests.Timeout:
+            abort(500)
+        except requests.exceptions.ConnectionError:
+            abort(500)
+        except requests.exceptions.RequestException:
+            abort(500)
+
     return render_template('singup.html'), 200
 
 @app.route('/logout')
