@@ -60,14 +60,24 @@ def get_post():
 def signup():
     data = request.get_json()
 
-    username = data.get('username')
-    primeiro_nome = data.get('primeiro_nome')
-    ultimo_nome = data.get('ultimo_nome')
-    genero = data.get('genero')
-    data_nascimento = data.get('data_nascimento')
-    email = data.get('email')
-    password = data.get('password')
-    confirm_password = data.get('confirm_password')
+    # Verificar se todos os campos necessários estão presentes
+    required_fields = ['username', 'primeiro_nome', 'ultimo_nome', 'genero', 'data_nascimento', 'email', 'password']
+    missing_fields = [field for field in required_fields if field not in data]
+    
+    if missing_fields:
+        return jsonify({'message': f'Campos faltando: {", ".join(missing_fields)}'}), 400
+
+    username = data['username']
+    primeiro_nome = data['primeiro_nome']
+    ultimo_nome = data['ultimo_nome']
+    genero = data['genero']
+    data_nascimento = data['data_nascimento']
+    email = data['email']
+    password = data['password']
+
+    # Validar e formatar os dados, se necessário
+    if len(password) < 6:
+        return jsonify({'message': 'A senha deve ter pelo menos 6 caracteres'}), 400
 
     hashed_password = generate_password_hash(password)
     user_id = gerar_id_post()
@@ -83,8 +93,12 @@ def signup():
         connection.commit()
         return jsonify({'message': 'Registro bem-sucedido'}), 201
 
-    except mysql.connector.Error as err:
-        return jsonify({'message': f'Erro ao registrar: {err}'}), 500
+    except Error as err:
+        connection.rollback()
+        return jsonify({'message': f'Erro com MySQL: {err}'}), 500
+
+    except Exception as e:
+        return jsonify({'message': f'Erro ao registrar: {e}'}), 500
 
     finally:
         cursor.close()
