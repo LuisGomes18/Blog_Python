@@ -23,6 +23,13 @@ body {
     margin: 20px;
 }
 
+.username {
+    position: absolute;
+    top: 40px;
+    right: 25px;
+    padding: 20px 0 20px 0;
+}
+
 .root {
     margin: 60px 0 0 0;
 }

@@ -4,7 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="IE=7">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="theme-color" content="#ffffff" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -15,37 +14,45 @@
 </head>
 
 <body>
-    <nav class="navbar" id="navbar">
-        <a href="#home">Home</a>
-        <a href="#news">News</a>
-        <a href="#contact">Contact</a>
-        <a href="#about">About</a>
-        <a href="javascript:void(0);" class="icon" onclick="myFunction()">
-            <span class="material-symbols-outlined">
-                menu
-            </span>
-        </a>
-    </nav>
+    <header>
+        <nav class="navbar" id="navbar">
+            <a href="#home">Home</a>
+            <a href="#news">News</a>
+            <a href="#contact">Contact</a>
+            <a href="#about">About</a>
+            <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+                <span class="material-symbols-outlined">
+                    menu
+                </span>
+            </a>
+        </nav>
+    </header>
 
     <main>
         <h1 class="titulo_pagina">Sistema de Blog</h1>
+        
+        {% if username %}
+        <a class="login_button" href="{{ url_for('logout') }}">Logout</a>
+        <p class="username">{{ username }}</p>
+        {% else %}
         <a class="login_button" href="{{ url_for('login') }}">Login</a>
+        {% endif %}
 
         <div class="root">
             {% for post in posts %}
-            <div class="posts">
+            <article class="posts">
                 <h2>{{ post["titulo"] }}</h2>
                 <p>{{ post["descricao"] }}</p>
                 <p>Data de Postagem:<br> {{ post["data"] }}</p>
                 <p>ID do post: {{ post["id"] }}</p>
-                <p>Autor do Post: {{ post["autor_post"] }}
+                <p>Autor do Post: {{ post["autor_post"] }}</p>
                 {% if post["modificado"] == 1 %}
                 <p>Modificado: Sim</p>
                 <p>Data de Modificação:<br> {{ post["data_modificacao"] }}</p>
                 {% else %}
                 <p>Modificado: Não</p>
                 {% endif %}
-            </div>
+            </article>
             {% endfor %}
         </div>
     </main>
