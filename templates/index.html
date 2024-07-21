@@ -20,6 +20,11 @@
             <a href="#news">News</a>
             <a href="#contact">Contact</a>
             <a href="#about">About</a>
+            {% if username %}
+            <a href="#">New Post</a>
+            <a href="#">Modificar Post</a>
+            <a href="#">Deletar Post</a>
+            {% endif %}
             <a href="javascript:void(0);" class="icon" onclick="myFunction()">
                 <span class="material-symbols-outlined">
                     menu
