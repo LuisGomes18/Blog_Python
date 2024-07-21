@@ -11,6 +11,18 @@ body {
     margin: 200px 0 500px 0;
 }
 
+.login_button {
+    padding: 10px;
+    border: 2px solid black;
+    border-radius: 15px;
+    text-decoration: none;
+    color: black;
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 20px;
+}
+
 .root {
     margin: 60px 0 0 0;
 }

@@ -29,6 +29,7 @@
 
     <main>
         <h1 class="titulo_pagina">Sistema de Blog</h1>
+        <a class="login_button" href="{{ url_for('login') }}">Login</a>
 
         <div class="root">
             {% for post in posts %}
