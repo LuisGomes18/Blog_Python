@@ -33,6 +33,11 @@ body {
     margin: 10px;
 }
 
+select#genero {
+    padding: 10px;
+    margin: 10px;
+}
+
 .singup-container {
     width: 90%;
     max-width: 400px;
@@ -41,6 +46,7 @@ body {
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     background-color: #fff;
+    margin: 250px 0 0 0;
 }
 
 .singup-container h2 {

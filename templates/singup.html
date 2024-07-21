@@ -12,17 +12,40 @@
 </head>
 
 <body>
+    <a class="login_button" href="{{ url_for('login') }}">Login</a>
+    <a class="voltar_button" href="{{ url_for('index') }}">Voltar</a>
     <div class="singup-container">
         <h2>Singup</h2>
-        <a class="login_button" href="{{ url_for('login') }}">Login</a>
-        <a class="voltar_button" href="{{ url_for('index') }}">Voltar</a>
         <form action="/singup" method="POST">
             <label for="username">Usuário</label>
             <input type="text" id="username" name="username" required autocomplete="username">
             
+            <label for="primeiro_nome">Primeiro Nome</label>
+            <input type="text" id="primeiro_nome" name="primeiro_nome" required autocomplete="given-name">
+
+            <label for="ultimo_nome">Ultimo Nome</label>
+            <input type="text" id="ultimo_nome" name="ultimo_nome" required autocomplete="family-name">
+
+            <label for="genero">Genero</label>
+            <select id="genero" name="genero" required>
+                <option value="m">Masculino</option>
+                <option value="f">Feminino</option>
+                <option value="nb">Outro</option>
+            </select>
+
+            <label for="data_nascimento">Data de Nascimento</label>
+            <input type="date" id="data_nascimento" name="data_nascimento" required>
+
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required autocomplete="email">
+
+
             <label for="password">Senha</label>
             <input type="password" id="password" name="password" required autocomplete="current-password">
             
+            <label for="confirm_password">Confirmar Password</label>
+            <input type="password" id="confirm_password" name="confirm_password" required autocomplete="current-password">
+
             <button type="submit">Entrar</button>
 
             {% if error %}
