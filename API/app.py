@@ -5,7 +5,7 @@ from datetime import datetime
 import mysql.connector
 from flask import Flask, jsonify, request, abort
 from werkzeug.security import generate_password_hash, check_password_hash
-from extras import carregar_configuracoes, conectar_banco_de_dados, gerar_id_post
+from extras import carregar_configuracoes, conectar_banco_de_dados, gerar_id_conta
 
 
 app = Flask(__name__)
@@ -80,7 +80,7 @@ def signup():
         return jsonify({'message': 'A senha deve ter pelo menos 6 caracteres'}), 400
 
     hashed_password = generate_password_hash(password)
-    user_id = gerar_id_post()
+    user_id = gerar_id_conta()
 
     try:
         connection = conectar_banco_de_dados()
@@ -93,11 +93,12 @@ def signup():
         connection.commit()
         return jsonify({'message': 'Registro bem-sucedido'}), 201
 
-    except Error as err:
+    except mysql.connector.Error as err:
         connection.rollback()
         return jsonify({'message': f'Erro com MySQL: {err}'}), 500
 
     except Exception as e:
+        connection.rollback()
         return jsonify({'message': f'Erro ao registrar: {e}'}), 500
 
     finally:

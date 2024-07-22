@@ -63,15 +63,15 @@ def conectar_banco_de_dados():
     return conececao
 
 
-def gerar_id_post():
+def gerar_id_conta():
     """
-    Gera um ID único para um novo post.
+    Gera um ID único para uma nova conta.
 
     Este método abre uma conexão com o banco de dados, cria um cursor e executa
     uma consulta para verificar se o ID gerado já existe. Caso exista, ele gera
     um novo ID até encontrar um ID único.
 
-    :return: Um ID único para um novo post
+    :return: Um ID único para uma nova conta
     """
 
     # Conecta ao banco de dados
@@ -86,14 +86,14 @@ def gerar_id_post():
         id = randint(1111, 9999)
 
         # Executa a consulta para verificar se o ID já existe
-        query = "SELECT * FROM posts WHERE id = %s"
+        query = "SELECT * FROM login WHERE id = %s"
         cursor.execute(query, (id,))
 
         # Obtém os resultados da consulta
-        post = cursor.fetchone()
+        conta = cursor.fetchone()
 
         # Verifica se o ID é único
-        if not post:
+        if not conta:
             # Se for único, sai do loop e retorna o ID
             break
 
