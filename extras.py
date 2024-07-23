@@ -1,4 +1,21 @@
+from os import getenv
+from random import randint
+from dotenv import load_dotenv
 from yaml import safe_load, YAMLError
+import mysql.connector
+
+
+load_dotenv()
+db_host = getenv('DB_HOST')
+db_user = getenv('DB_USER')
+db_pass = getenv('DB_PASS')
+db_name = getenv('DB_NAME')
+db_config = {
+    'user': db_user,
+    'password': db_pass,
+    'host': db_host,
+    'database': 'BLOG'
+}
 
 
 def carregar_configuracoes():
@@ -39,3 +56,51 @@ def carregar_configuracoes():
     # de erro detalhada.
     except Exception as e:
         raise Exception(f'Erro ao ler o arquivo config.yml: {e}')
+
+
+def conectar_banco_de_dados():
+    conececao = mysql.connector.connect(**db_config)
+    return conececao
+
+
+def gerar_id_post():
+    """
+    Gera um ID único para um novo post.
+
+    Este método abre uma conexão com o banco de dados, cria um cursor e executa
+    uma consulta para verificar se o ID gerado já existe. Caso exista, ele gera
+    um novo ID até encontrar um ID único.
+
+    :return: Um ID único para um novo post
+    """
+
+    # Conecta ao banco de dados
+    connection = conectar_banco_de_dados()
+
+    # Cria um cursor para executar consultas
+    cursor = connection.cursor(dictionary=True)
+
+    # Loop infinito para gerar um ID único
+    while True:
+        # Gera um novo ID aleatório
+        id = randint(1111, 9999)
+
+        # Executa a consulta para verificar se o ID já existe
+        query = "SELECT * FROM posts WHERE id = %s"
+        cursor.execute(query, (id,))
+
+        # Obtém os resultados da consulta
+        post = cursor.fetchone()
+
+        # Verifica se o ID é único
+        if not post:
+            # Se for único, sai do loop e retorna o ID
+            break
+
+    # Fecha o cursor e a conexão com o banco de dados
+    cursor.close()
+    connection.close()
+
+    # Retorna o ID único gerado
+    return id
+
