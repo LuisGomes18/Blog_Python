@@ -1,5 +1,6 @@
 from os import getenv
 from random import randint
+from datetime import datetime
 from dotenv import load_dotenv
 from yaml import safe_load, YAMLError
 import mysql.connector
@@ -103,3 +104,9 @@ def gerar_id_conta():
 
     # Retorna o ID único gerado
     return id
+
+
+def gerar_data():
+    agora = datetime.now()
+    return agora.strftime("%Y-%m-%d %H:%M:%S")
+

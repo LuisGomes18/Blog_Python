@@ -5,7 +5,7 @@ from datetime import datetime
 import mysql.connector
 from flask import Flask, jsonify, request, abort
 from werkzeug.security import generate_password_hash, check_password_hash
-from extras import carregar_configuracoes, conectar_banco_de_dados, gerar_id_conta
+from extras import carregar_configuracoes, conectar_banco_de_dados, gerar_id_conta, gerar_data
 
 
 app = Flask(__name__)
@@ -54,6 +54,42 @@ def get_post():
         return jsonify(post), 200
     else:
         abort(404)
+
+
+@app.route('/api/criar_posts', methods=['POST'])
+def criar_posts():
+    data = request.get_json()
+
+    required_fields = ['titulo', 'descricao', 'username', 'id']
+    missing_fields = [field for field in required_fields if field not in data]
+
+    if missing_fields:
+        return jsonify({'message': f'Campos faltando: {", ".join(missing_fields)}'}), 400
+
+    id = data['id']
+    titulo = data['titulo']
+    descricao = data['descricao']
+    username = data['username']
+    data_atual = gerar_data()
+
+    try:
+        connection = conectar_banco_de_dados()
+        cursor = connection.cursor()
+        query = "INSERT INTO posts (id, titulo, descricao, data, data_modificacao, modificado, autor_post) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+        cursor.execute(query, (id, titulo, descricao, data_atual, None, 0, username))
+        connection.commit()
+        return jsonify({'message': 'Post criado com sucesso'}), 201
+    except mysql.connector.Error as err:
+        connection.rollback()
+        return jsonify({'message': f'Erro com MySQL: {err}'}), 500
+
+    except Exception as e:
+        connection.rollback()
+        return jsonify({'message': f'Erro ao registrar: {e}'}), 500
+
+    finally:
+        cursor.close()
+        connection.close()
 
 
 @app.route('/api/signup', methods=['POST'])
