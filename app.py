@@ -2,7 +2,7 @@ from os import getenv, urandom
 import requests
 from dotenv import load_dotenv
 from flask import Flask, abort, render_template, session, redirect, url_for, request
-from extras import carregar_configuracoes
+from extras import carregar_configuracoes, gerar_id_post
 
 app = Flask(__name__)
 app.secret_key = urandom(16)
@@ -107,11 +107,49 @@ def singup():
 
     return render_template('singup.html'), 200
 
+
+@app.route('/criar_post', methods=['GET', 'POST'])
+def criar_post():
+    if 'username' not in session:
+        return redirect(url_for('login')), 302
+
+    id_post = gerar_id_post()
+    username = session["username"]
+
+    if request.method == 'POST':
+        titulo = request.form.get('titulo')
+        descricao = request.form.get('descricao')
+
+        if not titulo or not descricao:
+            return render_template('criar_post.html', error='Informações do post não podem estar em branco!'), 401
+
+        dados = {
+            'id': id_post,
+            'titulo': titulo, 
+            'descricao': descricao,
+            'username': username
+        }
+
+        try:
+            response = requests.post(f"http://{ip_api}/api/criar_post", json=dados, timeout=5)
+            if response.status_code == 201:
+                return redirect(url_for('index')), 302
+            else:
+                return render_template('criar_post.html', error=response.json()), response.status_code
+        except requests.Timeout:
+            return render_template('criar_post.html', error='Request timed out. Please try again.'), 500
+        except requests.ConnectionError:
+            return render_template('criar_post.html', error='Connection error. Please try again.'), 500
+        except requests.RequestException as e:
+            return render_template('criar_post.html', error=str(e)), 500
+
+    return render_template('criar_post.html', id=id_post), 200
+
 @app.route('/logout')
 def logout():
     if 'username' in session:
         session.pop('username')
-        return redirect(url_for('login')), 302
+        return redirect(url_for('index')), 302
     else:
         return redirect(url_for('index')), 302
 

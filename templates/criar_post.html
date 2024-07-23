@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet" href="../static/css/criar_post/main.css">
+    <title>Blog Criar Conta</title>
+</head>
+
+<body>
+    <div class="criar_post-container">
+        <h2>Criar Post</h2>
+        <a class="voltar_button" href="{{ url_for('index') }}">Voltar</a>
+        <form action="/criar_post" method="POST">
+            <label for="titulo">Titulo</label>
+            <input type="text" id="titulo" name="titulo" required>
+            
+            <label for="descricao">Descricao</label>
+            <input type="text" id="descricao" name="descricao" required>
+            
+            <label for="id">{{ id }}</label>
+
+            <button type="submit">Enviar</button>
+
+            {% if error %}
+            <p class="error" style="color: red">{{ error }}</p>
+            {% endif %}
+        </form>
+    </div>
+</body>
+
+</html>
