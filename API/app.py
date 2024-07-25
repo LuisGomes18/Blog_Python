@@ -1,12 +1,10 @@
 from os import urandom
-from random import randint
 import time
 from datetime import datetime
 import mysql.connector
 from flask import Flask, jsonify, request, abort
 from werkzeug.security import generate_password_hash, check_password_hash
 from extras import carregar_configuracoes, conectar_banco_de_dados, gerar_id_conta, gerar_data
-
 
 app = Flask(__name__)
 app.secret_key = urandom(16)
@@ -19,7 +17,6 @@ def get_uptime():
     uptime_seconds = int(current_time - start_time)
     return uptime_seconds
 
-
 @app.route('/api/status', methods=['GET'])
 def index():
     uptime_seconds = get_uptime()
@@ -27,8 +24,6 @@ def index():
     if internal_errors:
         status_message['internal_errors'] = internal_errors
     return jsonify(status_message), 200
-
-
 
 @app.route('/api/posts', methods=['GET'])
 def get_posts():
@@ -39,7 +34,6 @@ def get_posts():
     cursor.close()
     connection.close()
     return jsonify(posts), 200
-
 
 @app.route('/api/post', methods=['GET'])
 def get_post():
@@ -54,7 +48,6 @@ def get_post():
         return jsonify(post), 200
     else:
         abort(404)
-
 
 @app.route('/api/criar_posts', methods=['POST'])
 def criar_posts():
@@ -82,21 +75,17 @@ def criar_posts():
     except mysql.connector.Error as err:
         connection.rollback()
         return jsonify({'message': f'Erro com MySQL: {err}'}), 500
-
     except Exception as e:
         connection.rollback()
         return jsonify({'message': f'Erro ao registrar: {e}'}), 500
-
     finally:
         cursor.close()
         connection.close()
-
 
 @app.route('/api/signup', methods=['POST'])
 def signup():
     data = request.get_json()
 
-    # Verificar se todos os campos necessários estão presentes
     required_fields = ['username', 'primeiro_nome', 'ultimo_nome', 'genero', 'data_nascimento', 'email', 'password']
     missing_fields = [field for field in required_fields if field not in data]
     
@@ -111,7 +100,6 @@ def signup():
     email = data['email']
     password = data['password']
 
-    # Validar e formatar os dados, se necessário
     if len(password) < 6:
         return jsonify({'message': 'A senha deve ter pelo menos 6 caracteres'}), 400
 
@@ -128,19 +116,15 @@ def signup():
         cursor.execute(query, (user_id, username, primeiro_nome, ultimo_nome, genero, data_nascimento, email, hashed_password, 0))
         connection.commit()
         return jsonify({'message': 'Registro bem-sucedido'}), 201
-
     except mysql.connector.Error as err:
         connection.rollback()
         return jsonify({'message': f'Erro com MySQL: {err}'}), 500
-
     except Exception as e:
         connection.rollback()
         return jsonify({'message': f'Erro ao registrar: {e}'}), 500
-
     finally:
         cursor.close()
         connection.close()
-
 
 @app.route('/api/login', methods=['POST'])
 def login():
@@ -161,7 +145,6 @@ def login():
     else:
         return jsonify({'message': 'Credenciais inválidas'}), 401
 
-
 @app.errorhandler(404)
 def not_found(error):
     return jsonify({'message': 'Requisição inválida'}), 404
@@ -172,8 +155,6 @@ def handle_exception(error):
     error_message = f'Erro em {now}: {str(error)}'
     internal_errors.append(error_message)
     return jsonify({'message': 'Erro interno'}), 500
-
-
 
 if __name__ == '__main__':
     debug = config['informacao_api']['debug']

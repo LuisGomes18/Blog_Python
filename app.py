@@ -13,16 +13,18 @@ ip_api = getenv('IP_API')
 
 @app.route('/')
 def index():
-    response = requests.get(f"http://{ip_api}/api/posts", timeout=5)
-    if response.status_code == 200:
+    try:
+        response = requests.get(f"http://{ip_api}/api/posts", timeout=5)
+        response.raise_for_status()
         posts = response.json()
-        if 'username' in session:
-            username = session.get('username')
-            return render_template('index.html', posts=posts, username=username), 200
-        else:
-            return render_template('index.html', posts=posts), 200
-    else:
+    except (requests.Timeout, requests.exceptions.RequestException):
         abort(500)
+
+    if 'username' in session:
+        username = session.get('username')
+        return render_template('index.html', posts=posts, username=username), 200
+    else:
+        return render_template('index.html', posts=posts), 200
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -41,23 +43,19 @@ def login():
 
         try:
             response = requests.post(f"http://{ip_api}/api/login", json=dados, timeout=5)
-            if response.status_code == 200:
-                session['username'] = username
-                return redirect(url_for('index')), 302
-            else:
-                return render_template('login.html', error='Credenciais inválidas!'), 401
-
-        except requests.Timeout:
-            abort(500)
-        except requests.exceptions.ConnectionError:
-            abort(500)
-        except requests.exceptions.RequestException:
+            response.raise_for_status()
+            session['username'] = username
+            return redirect(url_for('index')), 302
+        except requests.exceptions.HTTPError:
+            return render_template('login.html', error='Credenciais inválidas!'), 401
+        except (requests.Timeout, requests.exceptions.RequestException):
             abort(500)
 
     return render_template('login.html'), 200
 
-@app.route('/singup', methods=['GET', 'POST'])
-def singup():
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
     if 'username' in session:
         return redirect(url_for('index')), 302
 
@@ -72,10 +70,10 @@ def singup():
         confirm_password = request.form['confirm_password']
 
         if password != confirm_password:
-            return render_template('singup.html', error='As senhas não coincidem'), 401
+            return render_template('signup.html', error='As senhas não coincidem'), 401
 
-        if not username or not primeiro_nome or not ultimo_nome or not genero or not data_nascimento or not email or not password or not confirm_password:
-            return render_template('singup.html', error='Credenciais não podem estar em branco!'), 401
+        if not all([username, primeiro_nome, ultimo_nome, genero, data_nascimento, email, password, confirm_password]):
+            return render_template('signup.html', error='Credenciais não podem estar em branco!'), 401
 
         dados = {
             'username': username,
@@ -84,28 +82,20 @@ def singup():
             'genero': genero,
             'data_nascimento': data_nascimento,
             'email': email,
-            'confirm_password': confirm_password,
             'password': password
         }
 
         try:
             response = requests.post(f"http://{ip_api}/api/signup", json=dados, timeout=5)
-            if response.status_code == 201:
-                session['username'] = username
-                return redirect(url_for('login')), 302
-            elif response.status_code == 500:
-                return render_template('singup.html', error=response.json()), 500
-            else:
-                return render_template('singup.html', error='Credenciais inválidas!'), 401
-
-        except requests.Timeout:
-            abort(500)
-        except requests.exceptions.ConnectionError:
-            abort(500)
-        except requests.exceptions.RequestException:
+            response.raise_for_status()
+            session['username'] = username
+            return redirect(url_for('login')), 302
+        except requests.exceptions.HTTPError:
+            return render_template('signup.html', error='Credenciais inválidas!'), 401
+        except (requests.Timeout, requests.exceptions.RequestException):
             abort(500)
 
-    return render_template('singup.html'), 200
+    return render_template('signup.html'), 200
 
 
 @app.route('/criar_post', methods=['GET', 'POST'])
@@ -132,31 +122,27 @@ def criar_post():
 
         try:
             response = requests.post(f"http://{ip_api}/api/criar_post", json=dados, timeout=5)
-            if response.status_code == 201:
-                return redirect(url_for('index')), 302
-            else:
-                return render_template('criar_post.html', error=response.json()), response.status_code
-        except requests.Timeout:
-            return render_template('criar_post.html', error='Request timed out. Please try again.'), 500
-        except requests.ConnectionError:
-            return render_template('criar_post.html', error='Connection error. Please try again.'), 500
-        except requests.RequestException as e:
+            response.raise_for_status()
+            return redirect(url_for('index')), 302
+        except requests.exceptions.HTTPError:
+            return render_template('criar_post.html', error='Erro ao criar post!'), 500
+        except (requests.Timeout, requests.exceptions.RequestException) as e:
             return render_template('criar_post.html', error=str(e)), 500
 
     return render_template('criar_post.html', id=id_post), 200
+
 
 @app.route('/logout')
 def logout():
     if 'username' in session:
         session.pop('username')
-        return redirect(url_for('index')), 302
-    else:
-        return redirect(url_for('index')), 302
+    return redirect(url_for('index')), 302
 
 
 @app.errorhandler(404)
 def not_found(error):
     return render_template('error/404.html'), 404
+
 
 @app.errorhandler(500)
 def internal_error(error):
